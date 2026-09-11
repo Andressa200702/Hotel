@@ -6,9 +6,11 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Admin {
-    private Usuario usuario;
+    private String nome;
+    private String usuario;
 
-    public void gerenciarCadastro(){
-
+    public Admin(String nome, String usuario) {
+        this.nome = nome;
+        this.usuario = usuario;
     }
 }

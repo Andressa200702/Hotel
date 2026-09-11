@@ -10,6 +10,11 @@ public class Login {
     }
 
     public boolean autenticar(String email, String senha) {
+        Usuario usuario = sistemaCadastro.buscarPorEmail(email);
 
+        if (usuario == null) {
+            return false;
+        }
+            return usuario.login(email, senha);
+        }
     }
-}
