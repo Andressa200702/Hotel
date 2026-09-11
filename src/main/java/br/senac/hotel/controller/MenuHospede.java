@@ -2,11 +2,11 @@ package br.senac.hotel.controller;
 
 import br.senac.hotel.models.*;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit; // IMPORTANTE: Importar para calcular os dias
+import java.time.temporal.ChronoUnit; // IMPORTANTE: Importar para calcular os dia
 import java.util.List;
 import java.util.Scanner;
 
-public class MenuHospede {
+public class    MenuHospede {
 
     private Scanner sc = new Scanner(System.in);
     private SistemaCadastro sistemaCadastro;
@@ -20,13 +20,14 @@ public class MenuHospede {
     public void menu() {
         int opcao = -1;
 
-        while (opcao != 5) { // Ajustado para 5, que é a sua opção de sair
+        while (opcao != 6) { // Ajustado para 6, que agora é a opção de sair
             System.out.println("\n=== Menu Hóspede ===");
             System.out.println("1 - Fazer reserva");
             System.out.println("2 - Ver minhas reservas / status");
             System.out.println("3 - Fazer check-in");
             System.out.println("4 - Fazer check-out");
-            System.out.println("5 - Sair");
+            System.out.println("5 - Cancelar reserva"); // <-- NOVA OPÇÃO
+            System.out.println("6 - Sair");
             System.out.print("Opção: ");
             opcao = Integer.parseInt(sc.nextLine());
 
@@ -44,6 +45,9 @@ public class MenuHospede {
                     fazerCheckOut();
                     break;
                 case 5:
+                    cancelarReserva(); // <-- CHAMADA DO NOVO MÉTODO
+                    break;
+                case 6:
                     System.out.println("Saindo...");
                     break;
                 default:
@@ -81,20 +85,15 @@ public class MenuHospede {
                 break;
         }
 
-        // 2. Calcula o valor total usando a função que criamos antes
+
         double valorTotal = calcularValorHospedagem(checkIn, checkOut, quartoEscolhido);
         System.out.printf("Valor total estimado da hospedagem: R$ %.2f%n", valorTotal);
 
-        // 3. CORREÇÃO DO ERRO VERMELHO:
-        // Em vez de chamar o 'hospedeLogado.criarReserva', vamos criar a reserva diretamente aqui
-        // passando todas as informações necessárias, incluindo o hóspede logado (dono da reserva).
+
+
         int novoId = (int) (Math.random() * 1000); // Gera um ID temporário/aleatório para testes
 
         Reserva reserva = new Reserva(novoId, checkIn, checkOut, hospedeLogado);
-
-        // Se a sua classe Reserva tiver um campo para salvar o preço ou o quarto, você faz:
-        // reserva.setValorTotal(valorTotal);
-        // reserva.setTipoQuarto(quartoEscolhido);
 
         // 4. Salva no sistema de cadastro
         sistemaCadastro.adicionarReserva(reserva);
@@ -102,13 +101,9 @@ public class MenuHospede {
         System.out.println("Reserva criada! ID: " + reserva.getId() + " | Situação: " + reserva.getSituacao());
     }
 
-
-    // --- NOVA FUNÇÃO PARA CALCULAR O TEMPO E PREÇO ---
     private double calcularValorHospedagem(LocalDate checkIn, LocalDate checkOut, TipoQuarto quarto) {
-        // ChronoUnit.DAYS.between calcula a diferença exata de dias entre as duas datas
         long dias = ChronoUnit.DAYS.between(checkIn, checkOut);
 
-        // Evita que dê erro ou valor zero se a pessoa reservar entrada e saída no mesmo dia
         if (dias <= 0) {
             dias = 1;
         }
@@ -137,7 +132,7 @@ public class MenuHospede {
 
         Reserva reserva = sistemaCadastro.buscarReservaPorId(id);
 
-            if (reserva == null || !reserva.getHospede().equals(hospedeLogado)) {
+        if (reserva == null || !reserva.getHospede().equals(hospedeLogado)) {
             System.out.println("Reserva não encontrada.");
             return;
         }
@@ -169,5 +164,34 @@ public class MenuHospede {
 
         reserva.setSituacao(SituacaoReserva.CONCLUIDA);
         System.out.println("Check-out realizado! Situação: " + reserva.getSituacao());
+    }
+
+
+    private void cancelarReserva() {
+        System.out.print("Informe o ID da reserva que deseja cancelar: ");
+        int id = Integer.parseInt(sc.nextLine());
+
+        Reserva reserva = sistemaCadastro.buscarReservaPorId(id);
+
+        // Valida se a reserva existe e pertence ao usuário logado
+        if (reserva == null || !reserva.getHospede().equals(hospedeLogado)) {
+            System.out.println("Reserva não encontrada.");
+            return;
+        }
+
+        // Só permite o cancelamento se ela ainda não tiver sido concluída ou já cancelada
+        if (reserva.getSituacao() == SituacaoReserva.CONCLUIDA) {
+            System.out.println("Não é possível cancelar uma reserva já CONCLUÍDA.");
+            return;
+        }
+
+        if (reserva.getSituacao() == SituacaoReserva.CANCELADA) {
+            System.out.println("Esta reserva já está CANCELADA.");
+            return;
+        }
+
+        // Muda a situação para cancelada
+        reserva.setSituacao(SituacaoReserva.CANCELADA);
+        System.out.println("Reserva cancelada com sucesso! Situação: " + reserva.getSituacao());
     }
 }

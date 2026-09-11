@@ -64,13 +64,13 @@ public class SistemaCadastro {
         return reservasFiltradas;
     }
 
-    // --- COLE A NOVA FUNÇÃO EXATAMENTE AQUI ---
+
     public Reserva buscarReservaPorId(int id) {
         for (Reserva reserva : r) {
             if (reserva.getId() == id) {
-                return reserva; // Se achar o ID, retorna a reserva encontrada
+                return reserva;
             }
         }
-        return null; // Se vasculhar toda a lista e não achar nada, retorna null
+        return null;
     }
 }

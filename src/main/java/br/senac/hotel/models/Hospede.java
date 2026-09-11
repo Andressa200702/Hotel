@@ -9,7 +9,12 @@ public class Hospede {
     private Usuario usuario;
     private String documento;
 
-    public Reserva criarReserva(){
-        return new Reserva();
+    public Hospede(String nome, String email, String senha) {
+        this.usuario = new Usuario();
+        this.usuario.setNome(nome);
+        this.usuario.setEmail(email);
+        this.usuario.setSenha(senha);
     }
+
+
 }
