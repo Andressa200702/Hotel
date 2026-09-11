@@ -12,13 +12,4 @@ public class AdminVisao {
     }
 
 
-    public static void main(String[] args) {
-        a.exibirDadosAdministrador();
-        System.out.println();
-
-        adm.visualizarHospedes();
-        System.out.println();
-
-        adm.visualizarReservas();
-    }
 }
